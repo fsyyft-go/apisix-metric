@@ -3,8 +3,8 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/fsyyft-go/apisix-metric/handlers"
 	"github.com/fsyyft-go/apisix-metric/internal/config"
+	"github.com/fsyyft-go/apisix-metric/internal/service/web"
 )
 
 // WebService 提供 Web 相关的服务逻辑。
@@ -25,13 +25,13 @@ func (s *WebService) SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	// 注册根路由处理程序。
-	// 使用 handlers 包中的 RootHandler 处理根路径请求。
-	rootHandler := handlers.NewRootHandler()
+	// 使用 web 包中的 RootHandler 处理根路径请求。
+	rootHandler := web.NewRootHandler()
 	rootHandler.Register(r)
 
 	// 注册 Prometheus 指标路由。
-	// 使用 handlers 包中的 PrometheusHandler 处理指标收集。
-	promHandler := handlers.NewPrometheusHandler(s.cfg.Prometheus.Path)
+	// 使用 web 包中的 PrometheusHandler 处理指标收集。
+	promHandler := web.NewPrometheusHandler(s.cfg.Prometheus.Path)
 	promHandler.Register(r)
 
 	return r
