@@ -6,22 +6,29 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// Config 结构体定义了应用程序的配置结构。
-// 使用 yaml 标签来映射配置文件中的字段。
-type Config struct {
+type (
+	// Server 结构体定义了服务器的配置信息。
 	Server struct {
 		// Port 表示服务器监听的端口号。
 		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_SERVER_PORT 进行配置。
 		Port string `yaml:"port"`
-	} `yaml:"server"`
+	}
 
+	// Prometheus 结构体定义了 Prometheus 指标的配置信息。
 	Prometheus struct {
 		// Path 表示 Prometheus 指标的暴露路径。
 		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROMETHEUS_PATH 进行配置。
 		// 如果未指定，默认值为 /metrics。
 		Path string `yaml:"path"`
-	} `yaml:"prometheus"`
-}
+	}
+
+	// Config 结构体定义了应用程序的配置结构。
+	// 使用 yaml 标签来映射配置文件中的字段。
+	Config struct {
+		Server     `yaml:"server"`
+		Prometheus `yaml:"prometheus"`
+	}
+)
 
 // LoadConfig 从指定路径加载配置文件，并返回配置对象。
 // 配置文件采用 YAML 格式，支持环境变量覆盖配置值。
