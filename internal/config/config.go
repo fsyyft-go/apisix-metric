@@ -22,11 +22,22 @@ type (
 		Path string `yaml:"path"`
 	}
 
+	// Proxy 结构体定义了代理相关的配置信息。
+	Proxy struct {
+		// Local 结构体定义了本地代理的配置信息。
+		Local struct {
+			// Path 表示本地代理的路径。
+			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH 进行配置。
+			Path string `yaml:"path"`
+		} `yaml:"local"`
+	}
+
 	// Config 结构体定义了应用程序的配置结构。
 	// 使用 yaml 标签来映射配置文件中的字段。
 	Config struct {
 		Server     `yaml:"server"`
 		Prometheus `yaml:"prometheus"`
+		Proxy      `yaml:"proxy"`
 	}
 )
 
@@ -59,6 +70,13 @@ func LoadConfig(path string) (*Config, error) {
 		config.Prometheus.Path = path
 	} else if config.Prometheus.Path == "" {
 		config.Prometheus.Path = "/metrics"
+	}
+
+	// 使用环境变量覆盖本地代理路径配置。
+	if path := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH"); path != "" {
+		config.Proxy.Local.Path = path
+	} else if config.Proxy.Local.Path == "" {
+		config.Proxy.Local.Path = "/apisix/prometheus/metrics"
 	}
 
 	return &config, nil

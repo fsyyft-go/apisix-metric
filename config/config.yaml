@@ -7,3 +7,9 @@ server:
 prometheus:
   # Prometheus 指标暴露路径，默认为 /metrics。
   path: /metrics
+
+# 代理配置。
+proxy:
+  local:
+    # 本地代理路径配置。
+    path: /apisix/prometheus/metrics
