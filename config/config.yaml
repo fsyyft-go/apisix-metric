@@ -13,3 +13,15 @@ proxy:
   local:
     # 本地代理路径配置。
     path: /apisix/prometheus/metrics
+
+  # 代理服务配置。
+  service:
+    "548130462736843557": "apisix.d.pd.ppno.net"
+		"548144976421192485": "portainer.d.pd.ppno.net"
+		"548145579796988709": "hub.d.pd.ppno.net"
+  
+  # 代理路由配置。
+  route:
+    "548130589790700325": "apisix.d.pd.ppno.net"
+		"548145045006451493": "portainer.d.pd.ppno.net"
+		"548145620951499557": "hub.d.pd.ppno.net"

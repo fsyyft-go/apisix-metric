@@ -30,6 +30,12 @@ type (
 			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH 进行配置。
 			Path string `yaml:"path"`
 		} `yaml:"local"`
+
+		// Service 定义了代理服务的配置信息。
+		Service map[string]string `yaml:"service"`
+
+		// Route 定义了代理路由的配置信息。
+		Route map[string]string `yaml:"route"`
 	}
 
 	// Config 结构体定义了应用程序的配置结构。
