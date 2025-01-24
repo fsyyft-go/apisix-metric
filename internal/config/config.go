@@ -36,6 +36,21 @@ type (
 
 		// Route 定义了代理路由的配置信息。
 		Route map[string]string `yaml:"route"`
+
+		// Remote 结构体定义了远程代理的配置信息。
+		Remote struct {
+			// Scheme 表示远程代理的协议，如 http 或 https。
+			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_SCHEME 进行配置。
+			Scheme string `yaml:"scheme"`
+
+			// Host 表示远程代理的主机地址。
+			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_HOST 进行配置。
+			Host string `yaml:"host"`
+
+			// Path 表示远程代理的路径。
+			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_PATH 进行配置。
+			Path string `yaml:"path"`
+		} `yaml:"remote"`
 	}
 
 	// Config 结构体定义了应用程序的配置结构。
@@ -83,6 +98,27 @@ func LoadConfig(path string) (*Config, error) {
 		config.Proxy.Local.Path = path
 	} else if config.Proxy.Local.Path == "" {
 		config.Proxy.Local.Path = "/apisix/prometheus/metrics"
+	}
+
+	// 使用环境变量覆盖远程代理协议配置。
+	if scheme := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_REMOTE_SCHEME"); scheme != "" {
+		config.Proxy.Remote.Scheme = scheme
+	} else if config.Proxy.Remote.Scheme == "" {
+		config.Proxy.Remote.Scheme = "http"
+	}
+
+	// 使用环境变量覆盖远程代理主机配置。
+	if host := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_REMOTE_HOST"); host != "" {
+		config.Proxy.Remote.Host = host
+	} else if config.Proxy.Remote.Host == "" {
+		config.Proxy.Remote.Host = "10.254.157.113:25391"
+	}
+
+	// 使用环境变量覆盖远程代理路径配置。
+	if path := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_REMOTE_PATH"); path != "" {
+		config.Proxy.Remote.Path = path
+	} else if config.Proxy.Remote.Path == "" {
+		config.Proxy.Remote.Path = "/apisix/prometheus/metrics"
 	}
 
 	return &config, nil

@@ -23,5 +23,14 @@ proxy:
   # 代理路由配置。
   route:
     "548130589790700325": "apisix.d.pd.ppno.net"
-		"548145045006451493": "portainer.d.pd.ppno.net"
-		"548145620951499557": "hub.d.pd.ppno.net"
+    "548145045006451493": "portainer.d.pd.ppno.net"
+    "548145620951499557": "hub.d.pd.ppno.net"
+
+  # 远程代理配置。
+  remote:
+    # 远程代理协议，默认为 http。
+    scheme: http
+    # 远程代理主机地址。
+    host: "10.254.157.113:25391"
+    # 远程代理路径。
+    path: "/apisix/prometheus/metrics"
