@@ -22,35 +22,34 @@ type (
 		Path string `yaml:"path"`
 	}
 
+	// Local 结构体定义了本地代理的配置信息。
+	Local struct {
+		// Path 表示本地代理的路径。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH 进行配置。
+		Path string `yaml:"path"`
+	}
+
+	// Remote 结构体定义了远程代理的配置信息。
+	Remote struct {
+		// Scheme 表示远程代理的协议，如 http 或 https。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_SCHEME 进行配置。
+		Scheme string `yaml:"scheme"`
+
+		// Host 表示远程代理的主机地址。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_HOST 进行配置。
+		Host string `yaml:"host"`
+
+		// Path 表示远程代理的路径。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_PATH 进行配置。
+		Path string `yaml:"path"`
+	}
+
 	// Proxy 结构体定义了代理相关的配置信息。
 	Proxy struct {
-		// Local 结构体定义了本地代理的配置信息。
-		Local struct {
-			// Path 表示本地代理的路径。
-			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH 进行配置。
-			Path string `yaml:"path"`
-		} `yaml:"local"`
-
-		// Service 定义了代理服务的配置信息。
+		Local   Local             `yaml:"local"`
 		Service map[string]string `yaml:"service"`
-
-		// Route 定义了代理路由的配置信息。
-		Route map[string]string `yaml:"route"`
-
-		// Remote 结构体定义了远程代理的配置信息。
-		Remote struct {
-			// Scheme 表示远程代理的协议，如 http 或 https。
-			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_SCHEME 进行配置。
-			Scheme string `yaml:"scheme"`
-
-			// Host 表示远程代理的主机地址。
-			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_HOST 进行配置。
-			Host string `yaml:"host"`
-
-			// Path 表示远程代理的路径。
-			// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_REMOTE_PATH 进行配置。
-			Path string `yaml:"path"`
-		} `yaml:"remote"`
+		Route   map[string]string `yaml:"route"`
+		Remote  Remote            `yaml:"remote"`
 	}
 
 	// Config 结构体定义了应用程序的配置结构。

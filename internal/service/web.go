@@ -35,7 +35,7 @@ func (s *WebService) SetupRouter() *gin.Engine {
 	promHandler.Register(r)
 
 	// 注册代理路由处理程序
-	proxyHandler := web.NewProxyHandler(s.cfg.Proxy.Local.Path)
+	proxyHandler := web.NewProxyHandler(s.cfg)
 	proxyHandler.Register(r)
 
 	return r

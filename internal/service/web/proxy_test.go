@@ -13,7 +13,7 @@ func TestNewProxyHandler(t *testing.T) {
 	path := "/apisix/prometheus/metrics"
 	handler := NewProxyHandler(path)
 
-	assert.Equal(t, path, handler.Path, "handler path should match")
+	assert.Equal(t, path, handler.path, "handler path should match")
 }
 
 func TestProxyHandler_Register(t *testing.T) {
