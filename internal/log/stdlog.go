@@ -148,4 +148,4 @@ func (l *StdLogger) WithFields(fields map[string]interface{}) Logger {
 		logger: l.logger,
 		fields: newFields,
 	}
-} 
+}

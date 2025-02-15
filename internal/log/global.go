@@ -106,4 +106,4 @@ func WithField(key string, value interface{}) Logger {
 // WithFields 全局添加多个字段
 func WithFields(fields map[string]interface{}) Logger {
 	return GetLogger().WithFields(fields)
-} 
+}

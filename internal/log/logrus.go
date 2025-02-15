@@ -20,7 +20,7 @@ type LogrusLogger struct {
 // NewLogrusLogger 创建一个新的 LogrusLogger 实例
 func NewLogrusLogger(output string) (Logger, error) {
 	log := logrus.New()
-	
+
 	// 如果指定了输出目录
 	if output != "" {
 		// 确保目录存在
@@ -109,4 +109,4 @@ func (l *LogrusLogger) WithFields(fields map[string]interface{}) Logger {
 	return &LogrusLogger{
 		logger: l.logger.WithFields(fields),
 	}
-} 
+}

@@ -90,7 +90,7 @@ func TestLogLevels(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	logPath := filepath.Join(tmpDir, "all-levels.log")
-	
+
 	// 初始化 logrus 日志器
 	err = InitLogger(LogTypeLogrus, logPath)
 	assert.NoError(t, err)
@@ -100,13 +100,13 @@ func TestLogLevels(t *testing.T) {
 	// 测试所有日志级别
 	logger.Debug("Debug message")
 	logger.Debugf("Debug message with %s", "format")
-	
+
 	logger.Info("Info message")
 	logger.Infof("Info message with %s", "format")
-	
+
 	logger.Warn("Warn message")
 	logger.Warnf("Warn message with %s", "format")
-	
+
 	logger.Error("Error message")
 	logger.Errorf("Error message with %s", "format")
 
@@ -124,7 +124,7 @@ func TestWithFieldsAndFormat(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 
 	logPath := filepath.Join(tmpDir, "fields.log")
-	
+
 	// 初始化 logrus 日志器
 	err = InitLogger(LogTypeLogrus, logPath)
 	assert.NoError(t, err)
@@ -133,7 +133,7 @@ func TestWithFieldsAndFormat(t *testing.T) {
 
 	// 测试字段和格式化
 	logger.WithField("single", "field").Info("Single field test")
-	
+
 	logger.WithFields(map[string]interface{}{
 		"field1": "value1",
 		"field2": 123,
@@ -148,4 +148,4 @@ func TestWithFieldsAndFormat(t *testing.T) {
 	content, err := os.ReadFile(logPath)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, content)
-} 
+}

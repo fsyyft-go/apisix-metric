@@ -51,4 +51,4 @@ type Logger interface {
 	WithField(key string, value interface{}) Logger
 	// WithFields 添加多个字段
 	WithFields(fields map[string]interface{}) Logger
-} 
+}
