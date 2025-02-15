@@ -3,6 +3,13 @@ server:
   # 服务器监听端口，默认为 8080。
   port: 8080
 
+# 日志配置
+log:
+  # 日志类型，可选值：console, std, logrus，默认为 console
+  type: logrus
+  # 日志输出路径，默认输出到控制台
+  output: "logs/apisix-metric.log"
+
 # Prometheus 监控配置。
 prometheus:
   # Prometheus 指标暴露路径，默认为 /metrics。

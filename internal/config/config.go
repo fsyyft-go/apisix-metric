@@ -18,6 +18,17 @@ type (
 		Port string `yaml:"port"`
 	}
 
+	// Log 结构体定义了日志配置信息
+	Log struct {
+		// Type 表示日志类型，可选值：console, std, logrus
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_TYPE 进行配置
+		Type string `yaml:"type"`
+
+		// Output 表示日志输出路径
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_OUTPUT 进行配置
+		Output string `yaml:"output"`
+	}
+
 	// Prometheus 结构体定义了 Prometheus 指标的配置信息。
 	Prometheus struct {
 		// Path 表示 Prometheus 指标的暴露路径。
@@ -60,6 +71,7 @@ type (
 	// 使用 yaml 标签来映射配置文件中的字段。
 	Config struct {
 		Server     `yaml:"server"`
+		Log        `yaml:"log"`
 		Prometheus `yaml:"prometheus"`
 		Proxy      `yaml:"proxy"`
 	}
@@ -122,6 +134,18 @@ func LoadConfig(path string) (*Config, error) {
 		config.Proxy.Remote.Path = path
 	} else if config.Proxy.Remote.Path == "" {
 		config.Proxy.Remote.Path = "/apisix/prometheus/metrics"
+	}
+
+	// 使用环境变量覆盖日志类型配置
+	if logType := os.Getenv("FSYYFT_APISIX_METRIC_LOG_TYPE"); logType != "" {
+		config.Log.Type = logType
+	} else if config.Log.Type == "" {
+		config.Log.Type = "console"
+	}
+
+	// 使用环境变量覆盖日志输出路径配置
+	if logOutput := os.Getenv("FSYYFT_APISIX_METRIC_LOG_OUTPUT"); logOutput != "" {
+		config.Log.Output = logOutput
 	}
 
 	return &config, nil

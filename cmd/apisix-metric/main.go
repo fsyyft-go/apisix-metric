@@ -6,6 +6,7 @@ package main
 
 import (
 	"github.com/fsyyft-go/apisix-metric/internal/config"
+	"github.com/fsyyft-go/apisix-metric/internal/log"
 	"github.com/fsyyft-go/apisix-metric/internal/service"
 )
 
@@ -19,9 +20,22 @@ func main() {
 		panic(err)
 	}
 
+	// 初始化日志
+	if err := log.InitLogger(log.LogType(cfg.Log.Type), cfg.Log.Output); err != nil {
+		panic(err)
+	}
+
+	// 记录应用启动日志
+	log.Info("Starting APISIX Metric service...")
+	log.WithFields(map[string]interface{}{
+		"port":     cfg.Server.Port,
+		"log_type": cfg.Log.Type,
+		"log_path": cfg.Log.Output,
+	}).Info("Application configuration loaded")
+
 	// 创建并启动 Web 服务。
 	webService := service.NewWebService(cfg)
 	if err := webService.Run(); err != nil {
-		panic(err)
+		log.Fatal("Failed to start web service: ", err)
 	}
 }
