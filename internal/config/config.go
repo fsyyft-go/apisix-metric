@@ -59,12 +59,42 @@ type (
 		Path string `yaml:"path"`
 	}
 
+	// EtcdAuth 结构体定义了 etcd 认证信息。
+	EtcdAuth struct {
+		// Username 表示 etcd 认证用户名。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_ETCD_AUTH_USERNAME 进行配置。
+		Username string `yaml:"username"`
+
+		// Password 表示 etcd 认证密码。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_ETCD_AUTH_PASSWORD 进行配置。
+		Password string `yaml:"password"`
+	}
+
+	// Etcd 结构体定义了 etcd 配置信息。
+	Etcd struct {
+		// Endpoints 表示 etcd 服务器地址列表。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_ETCD_ENDPOINTS 进行配置。
+		Endpoints []string `yaml:"endpoints"`
+
+		// Timeout 表示连接超时时间（秒）。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_ETCD_TIMEOUT 进行配置。
+		Timeout int `yaml:"timeout"`
+
+		// Auth 表示认证配置。
+		Auth EtcdAuth `yaml:"auth"`
+
+		// Prefix 表示键前缀。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_PROXY_ETCD_PREFIX 进行配置。
+		Prefix string `yaml:"prefix"`
+	}
+
 	// Proxy 结构体定义了代理相关的配置信息。
 	Proxy struct {
 		Local   Local             `yaml:"local"`
 		Service map[string]string `yaml:"service"`
 		Route   map[string]string `yaml:"route"`
 		Remote  Remote            `yaml:"remote"`
+		Etcd    Etcd              `yaml:"etcd"`
 	}
 
 	// Config 结构体定义了应用程序的配置结构。
@@ -146,6 +176,31 @@ func LoadConfig(path string) (*Config, error) {
 	// 使用环境变量覆盖日志输出路径配置
 	if logOutput := os.Getenv("FSYYFT_APISIX_METRIC_LOG_OUTPUT"); logOutput != "" {
 		config.Log.Output = logOutput
+	}
+
+	// 使用环境变量覆盖 etcd 配置
+	if endpoints := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_ENDPOINTS"); endpoints != "" {
+		config.Proxy.Etcd.Endpoints = []string{endpoints}
+	} else if len(config.Proxy.Etcd.Endpoints) == 0 {
+		config.Proxy.Etcd.Endpoints = []string{"http://127.0.0.1:2379"}
+	}
+
+	if timeout := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_TIMEOUT"); timeout != "" {
+		config.Proxy.Etcd.Timeout = 30 // 默认 30 秒
+	}
+
+	if username := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_AUTH_USERNAME"); username != "" {
+		config.Proxy.Etcd.Auth.Username = username
+	}
+
+	if password := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_AUTH_PASSWORD"); password != "" {
+		config.Proxy.Etcd.Auth.Password = password
+	}
+
+	if prefix := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_PREFIX"); prefix != "" {
+		config.Proxy.Etcd.Prefix = prefix
+	} else if config.Proxy.Etcd.Prefix == "" {
+		config.Proxy.Etcd.Prefix = "/apisix"
 	}
 
 	return &config, nil

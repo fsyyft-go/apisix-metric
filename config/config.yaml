@@ -89,3 +89,17 @@ proxy:
     host: "10.254.157.113:25391"
     # 远程代理路径。
     path: "/apisix/prometheus/metrics"
+
+  # etcd 配置
+  etcd:
+    # etcd 服务器地址列表
+    endpoints:
+      - "http://10.254.157.113:10004"
+    # 连接超时时间（秒）
+    timeout: 30
+    # 认证配置（可选）
+    auth:
+      username: "root"
+      password: "etcd@2025"
+    # 前缀配置
+    prefix: "/apisix"
