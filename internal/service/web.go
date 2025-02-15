@@ -2,12 +2,14 @@
 //
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// Package service 提供了 Web 服务相关的核心功能实现。
 package service
 
 import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
+	"github.com/fsyyft-go/apisix-metric/internal/middleware"
 	"github.com/fsyyft-go/apisix-metric/internal/service/web"
 )
 
@@ -27,6 +29,9 @@ func NewWebService(cfg *config.Config) *WebService {
 func (s *WebService) SetupRouter() *gin.Engine {
 	// 创建默认的 Gin 实例，包含 Logger 和 Recovery 中间件。
 	r := gin.Default()
+
+	// 添加请求日志中间件，用于记录所有 HTTP 请求的详细信息。
+	r.Use(middleware.RequestLogger())
 
 	// 注册根路由处理程序。
 	// 使用 web 包中的 RootHandler 处理根路径请求。

@@ -6,6 +6,20 @@ IMAGE_NAME=fsyyft/apisix-metric
 # 获取当前日期，格式为 yyMMdd。
 DATE=$(shell date +%y%m%d)
 
+# 运行所有测试。
+# 使用 -v 标志显示详细的测试输出。
+# 使用 -race 标志检测数据竞争。
+test:
+	go test -v -race ./...
+
+# 运行测试并生成覆盖率报告。
+# 生成 HTML 格式的覆盖率报告。
+# 报告将保存在 coverage 目录下。
+coverage:
+	mkdir -p coverage
+	go test -v -race -coverprofile=coverage/coverage.out ./...
+	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
+
 # 构建 Docker 镜像并打标签。
 # 标签包括日期标签和 latest 标签。
 image:
@@ -26,3 +40,4 @@ push:
 # 删除本地构建的镜像。
 clean:
 	docker rmi $(IMAGE_NAME)
+	rm -rf coverage
