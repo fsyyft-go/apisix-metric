@@ -6,7 +6,9 @@ package etcd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -79,29 +81,72 @@ func (s *Service) GetData(ctx context.Context, prefix string) (map[string]string
 		"prefix": prefix,
 	}).Info("Getting data from etcd")
 
-	// 使用前缀获取数据
-	resp, err := s.client.Get(ctx, prefix, clientv3.WithPrefix())
-	if err != nil {
-		log.WithFields(map[string]interface{}{
-			"prefix": prefix,
-			"error":  err,
-		}).Error("Failed to get data from etcd")
-		return nil, fmt.Errorf("failed to get data from etcd: %v", err)
+	// 构建需要查询的前缀列表
+	prefixes := []string{
+		prefix + "/routes/",
+		prefix + "/services/",
 	}
 
 	// 创建结果映射
 	result := make(map[string]string)
-	for _, kv := range resp.Kvs {
-		result[string(kv.Key)] = string(kv.Value)
+
+	// 遍历所有前缀进行查询
+	for _, p := range prefixes {
+		// 使用前缀获取数据
+		resp, err := s.client.Get(ctx, p, clientv3.WithPrefix())
+		if err != nil {
+			log.WithFields(map[string]interface{}{
+				"prefix": p,
+				"error":  err,
+			}).Error("Failed to get data from etcd")
+			return nil, fmt.Errorf("failed to get data from etcd with prefix %s: %v", p, err)
+		}
+
+		// 将结果添加到结果映射中
+		for _, kv := range resp.Kvs {
+			result[string(kv.Key)] = string(kv.Value)
+		}
+	}
+
+	// 创建新的映射来存储处理后的结果
+	nameMap := make(map[string]string)
+
+	// 遍历结果，提取 name 字段
+	for key, value := range result {
+		// 尝试解析 JSON
+		var data map[string]interface{}
+		if err := json.Unmarshal([]byte(value), &data); err != nil {
+			// 记录跳过的数据
+			log.WithFields(map[string]interface{}{
+				"key":   key,
+				"value": value,
+				"error": err.Error(),
+			}).Debug("Skipping non-JSON data")
+			// 如果不是有效的 JSON，跳过这条记录
+			continue
+		}
+
+		// 尝试获取 name 字段
+		if name, ok := data["name"].(string); ok {
+			// 处理 key，去掉前缀
+			for _, p := range prefixes {
+				if strings.HasPrefix(key, p) {
+					// 去掉前缀，获取最后一个节点
+					key = strings.TrimPrefix(key, p)
+					break
+				}
+			}
+			nameMap[key] = name
+		}
 	}
 
 	// 记录获取数据成功的日志
 	log.WithFields(map[string]interface{}{
 		"prefix": prefix,
-		"count":  len(result),
+		"count":  len(nameMap),
 	}).Info("Successfully got data from etcd")
 
-	return result, nil
+	return nameMap, nil
 }
 
 // GetDataWithPrefix 从 etcd 获取带有配置前缀的数据。
