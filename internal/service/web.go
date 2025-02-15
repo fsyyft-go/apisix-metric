@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
+	"github.com/fsyyft-go/apisix-metric/internal/log"
 	"github.com/fsyyft-go/apisix-metric/internal/middleware"
 	"github.com/fsyyft-go/apisix-metric/internal/service/web"
 )
@@ -72,6 +73,17 @@ func (s *WebService) setupEngine() *gin.Engine {
 	// 用于转发和处理 APISIX 的 Prometheus 指标数据。
 	proxyHandler := web.NewProxyHandler(s.cfg)
 	proxyHandler.Register(s.engine)
+
+	// 注册 etcd 路由处理程序。
+	// 用于获取和展示 etcd 数据。
+	etcdHandler, err := web.NewEtcdHandler(s.cfg)
+	if err != nil {
+		log.WithFields(map[string]interface{}{
+			"error": err,
+		}).Error("Failed to create etcd handler")
+	} else {
+		etcdHandler.Register(s.engine)
+	}
 
 	return s.engine
 }
