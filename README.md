@@ -40,7 +40,7 @@ go get github.com/fsyyft-go/apisix-metric
 
 ### 配置
 
-创建 `config.yaml` 文件：
+创建 `config.yml` 文件：
 
 ```yaml
 # 服务器配置。
