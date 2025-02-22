@@ -21,7 +21,7 @@ import (
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
 	"github.com/fsyyft-go/apisix-metric/pkg/cache"
-	"github.com/fsyyft-go/apisix-metric/pkg/log"
+	"github.com/fsyyft-go/kit/log"
 )
 
 const (

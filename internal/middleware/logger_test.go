@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/fsyyft-go/apisix-metric/pkg/log"
+	"github.com/fsyyft-go/kit/log"
 )
 
 // TestRequestLogger 测试请求日志中间件的功能。

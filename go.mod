@@ -1,6 +1,8 @@
 module github.com/fsyyft-go/apisix-metric
 
-go 1.23.5
+go 1.24
+
+toolchain go1.24.0
 
 require (
 	github.com/gin-gonic/gin v1.10.0
@@ -22,6 +24,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgraph-io/ristretto v0.2.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/fsyyft-go/kit v0.0.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
