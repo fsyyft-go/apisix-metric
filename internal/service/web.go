@@ -11,9 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
-	"github.com/fsyyft-go/apisix-metric/internal/log"
 	"github.com/fsyyft-go/apisix-metric/internal/middleware"
 	"github.com/fsyyft-go/apisix-metric/internal/service/web"
+	"github.com/fsyyft-go/apisix-metric/pkg/log"
 )
 
 // WebService 提供 Web 相关的服务逻辑。

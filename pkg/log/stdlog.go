@@ -2,6 +2,7 @@
 //
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
+// Package log 提供了基于标准库的日志实现。
 package log
 
 import (
@@ -11,23 +12,35 @@ import (
 	"path/filepath"
 )
 
-// StdLogger 实现了 Logger 接口的标准库日志
+// StdLogger 实现了 Logger 接口，使用 Go 标准库的 log 包作为底层实现。
+// 这个实现提供了基本的日志功能：
+// - 支持不同的日志级别
+// - 支持结构化字段
+// - 支持文件输出
+// - 支持格式化日志
 type StdLogger struct {
+	// logger 是标准库的日志实例。
 	logger *log.Logger
+	// fields 存储结构化字段信息。
 	fields map[string]interface{}
 }
 
-// NewStdLogger 创建一个新的 StdLogger 实例
+// NewStdLogger 创建一个新的 StdLogger 实例。
+// 参数 output 指定日志文件的路径，如果为空则输出到标准输出。
+// 返回一个实现了 Logger 接口的实例和可能的错误。
 func NewStdLogger(output string) (Logger, error) {
 	var writer *os.File = os.Stdout
 
-	// 如果指定了输出目录
+	// 如果指定了输出目录，配置文件输出。
 	if output != "" {
-		// 确保目录存在
+		// 确保日志文件所在的目录存在。
+		// 使用 0755 权限确保目录可读可执行，且所有者可写。
 		if err := os.MkdirAll(filepath.Dir(output), 0755); err != nil {
 			return nil, err
 		}
-		// 打开日志文件
+
+		// 打开或创建日志文件。
+		// 使用 0666 权限确保文件可读可写。
 		file, err := os.OpenFile(output, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
 			return nil, err
@@ -36,11 +49,15 @@ func NewStdLogger(output string) (Logger, error) {
 	}
 
 	return &StdLogger{
+		// 创建标准库日志实例，启用时间戳。
 		logger: log.New(writer, "", log.LstdFlags),
+		// 初始化结构化字段映射。
 		fields: make(map[string]interface{}),
 	}, nil
 }
 
+// formatFields 格式化结构化字段为字符串。
+// 返回格式化后的字段字符串，如果没有字段则返回空字符串。
 func (l *StdLogger) formatFields() string {
 	if len(l.fields) == 0 {
 		return ""
@@ -52,6 +69,8 @@ func (l *StdLogger) formatFields() string {
 	return fields[:len(fields)-1] + "]"
 }
 
+// log 记录指定级别的日志。
+// 参数 level 是日志级别标识，args 是要记录的内容。
 func (l *StdLogger) log(level string, args ...interface{}) {
 	fields := l.formatFields()
 	if fields != "" {
@@ -61,6 +80,8 @@ func (l *StdLogger) log(level string, args ...interface{}) {
 	}
 }
 
+// logf 记录指定级别的格式化日志。
+// 参数 level 是日志级别标识，format 是格式化字符串，args 是格式化参数。
 func (l *StdLogger) logf(level string, format string, args ...interface{}) {
 	fields := l.formatFields()
 	if fields != "" {
@@ -70,59 +91,63 @@ func (l *StdLogger) logf(level string, format string, args ...interface{}) {
 	}
 }
 
-// Debug implements Logger
+// Debug 实现 Logger 接口的调试级别日志记录。
 func (l *StdLogger) Debug(args ...interface{}) {
 	l.log("[DEBUG]", args...)
 }
 
-// Debugf implements Logger
+// Debugf 实现 Logger 接口的格式化调试级别日志记录。
 func (l *StdLogger) Debugf(format string, args ...interface{}) {
 	l.logf("[DEBUG]", format, args...)
 }
 
-// Info implements Logger
+// Info 实现 Logger 接口的信息级别日志记录。
 func (l *StdLogger) Info(args ...interface{}) {
 	l.log("[INFO]", args...)
 }
 
-// Infof implements Logger
+// Infof 实现 Logger 接口的格式化信息级别日志记录。
 func (l *StdLogger) Infof(format string, args ...interface{}) {
 	l.logf("[INFO]", format, args...)
 }
 
-// Warn implements Logger
+// Warn 实现 Logger 接口的警告级别日志记录。
 func (l *StdLogger) Warn(args ...interface{}) {
 	l.log("[WARN]", args...)
 }
 
-// Warnf implements Logger
+// Warnf 实现 Logger 接口的格式化警告级别日志记录。
 func (l *StdLogger) Warnf(format string, args ...interface{}) {
 	l.logf("[WARN]", format, args...)
 }
 
-// Error implements Logger
+// Error 实现 Logger 接口的错误级别日志记录。
 func (l *StdLogger) Error(args ...interface{}) {
 	l.log("[ERROR]", args...)
 }
 
-// Errorf implements Logger
+// Errorf 实现 Logger 接口的格式化错误级别日志记录。
 func (l *StdLogger) Errorf(format string, args ...interface{}) {
 	l.logf("[ERROR]", format, args...)
 }
 
-// Fatal implements Logger
+// Fatal 实现 Logger 接口的致命错误级别日志记录。
+// 记录日志后会导致程序以状态码 1 退出。
 func (l *StdLogger) Fatal(args ...interface{}) {
 	l.log("[FATAL]", args...)
 	os.Exit(1)
 }
 
-// Fatalf implements Logger
+// Fatalf 实现 Logger 接口的格式化致命错误级别日志记录。
+// 记录日志后会导致程序以状态码 1 退出。
 func (l *StdLogger) Fatalf(format string, args ...interface{}) {
 	l.logf("[FATAL]", format, args...)
 	os.Exit(1)
 }
 
-// WithField implements Logger
+// WithField 实现 Logger 接口的单字段添加方法。
+// 创建一个新的日志实例，包含当前实例的所有字段和新添加的字段。
+// 返回包含所有字段的新 Logger 实例。
 func (l *StdLogger) WithField(key string, value interface{}) Logger {
 	newFields := make(map[string]interface{})
 	for k, v := range l.fields {
@@ -135,7 +160,9 @@ func (l *StdLogger) WithField(key string, value interface{}) Logger {
 	}
 }
 
-// WithFields implements Logger
+// WithFields 实现 Logger 接口的多字段添加方法。
+// 创建一个新的日志实例，包含当前实例的所有字段和新添加的字段。
+// 返回包含所有字段的新 Logger 实例。
 func (l *StdLogger) WithFields(fields map[string]interface{}) Logger {
 	newFields := make(map[string]interface{})
 	for k, v := range l.fields {

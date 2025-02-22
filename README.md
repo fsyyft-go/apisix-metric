@@ -190,3 +190,47 @@ go test ./...
 ## 致谢
 
 感谢所有为这个项目做出贡献的开发者！
+
+## 日志组件
+
+本项目提供了一个灵活的日志组件，支持多种日志后端，可以独立使用。
+
+### 特性
+
+- 支持多种日志后端（标准输出、Logrus）
+- 提供统一的日志接口
+- 支持结构化日志
+- 支持多个日志级别
+- 可配置输出目标
+
+### 快速开始
+
+```go
+import "github.com/fsyyft-go/apisix-metric/pkg/log"
+
+// 初始化日志系统（使用标准输出）
+if err := log.InitLogger(log.LogTypeStd, ""); err != nil {
+    panic(err)
+}
+
+// 记录日志
+log.Info("应用启动")
+
+// 使用结构化字段
+log.WithFields(map[string]interface{}{
+    "user": "admin",
+    "action": "login",
+}).Info("用户操作")
+```
+
+### 配置示例
+
+```yaml
+log:
+  # 日志类型：std 或 logrus
+  type: logrus
+  # 日志输出路径（留空表示标准输出）
+  output: logs/app.log
+```
+
+更多示例请参考 [example/log](example/log) 目录。

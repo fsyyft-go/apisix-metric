@@ -6,10 +6,14 @@ IMAGE_NAME=fsyyft/apisix-metric
 # 获取当前日期，格式为 yyMMdd。
 DATE=$(shell date +%y%m%d)
 
+# 日志目录。
+LOG_DIR=logs
+
 # 运行所有测试。
 # 使用 -v 标志显示详细的测试输出。
 # 使用 -race 标志检测数据竞争。
 test:
+	mkdir -p $(LOG_DIR)
 	go test -v -race ./...
 
 # 运行测试并生成覆盖率报告。
@@ -17,6 +21,7 @@ test:
 # 报告将保存在 coverage 目录下。
 coverage:
 	mkdir -p coverage
+	mkdir -p $(LOG_DIR)
 	go test -v -race -coverprofile=coverage/coverage.out ./...
 	go tool cover -html=coverage/coverage.out -o coverage/coverage.html
 
@@ -26,18 +31,30 @@ image:
 	docker build -t $(IMAGE_NAME):$(DATE) -t $(IMAGE_NAME):latest .
 
 # 运行容器。
-# 将容器内的 44444 端口映射到主机的 44444 端口。
-# 支持通过环境变量 FSYYFT_APISIX_METRIC_SERVER_PORT 指定端口，默认为 44444。
+# 将容器内的 8080 端口映射到主机的 48080 端口。
+# 将容器内的 /app/logs 目录挂载到主机的 ./logs 目录。
+# 支持通过环境变量配置：
+# - FSYYFT_APISIX_METRIC_SERVER_PORT：服务端口，默认为 8080
+# - FSYYFT_APISIX_METRIC_LOG_TYPE：日志类型，默认为 logrus
+# - FSYYFT_APISIX_METRIC_LOG_OUTPUT：日志输出路径，默认为 /app/logs/app.log
 run:
-	docker run -p 48080:8080 -e FSYYFT_APISIX_METRIC_SERVER_PORT=$(or $(FSYYFT_APISIX_METRIC_SERVER_PORT),8080) $(IMAGE_NAME)
+	mkdir -p $(LOG_DIR)
+	docker run \
+		-p 48080:8080 \
+		-v $(PWD)/$(LOG_DIR):/app/logs \
+		-e FSYYFT_APISIX_METRIC_SERVER_PORT=$(or $(FSYYFT_APISIX_METRIC_SERVER_PORT),8080) \
+		-e FSYYFT_APISIX_METRIC_LOG_TYPE=$(or $(FSYYFT_APISIX_METRIC_LOG_TYPE),logrus) \
+		-e FSYYFT_APISIX_METRIC_LOG_OUTPUT=$(or $(FSYYFT_APISIX_METRIC_LOG_OUTPUT),/app/logs/app.log) \
+		$(IMAGE_NAME)
 
 # 推送镜像到 Docker Hub。
 # 推送所有标签的镜像。
 push:
 	docker push $(IMAGE_NAME)
 
-# 清理构建缓存。
-# 删除本地构建的镜像。
+# 清理构建缓存和日志文件。
+# 删除本地构建的镜像、覆盖率报告和日志文件。
 clean:
 	docker rmi $(IMAGE_NAME)
 	rm -rf coverage
+	rm -rf $(LOG_DIR)

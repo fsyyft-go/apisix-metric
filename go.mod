@@ -5,7 +5,9 @@ go 1.23.5
 require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/prometheus/client_golang v1.20.5
+	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
+	go.etcd.io/etcd/client/v3 v3.5.18
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -40,12 +42,10 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.18 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.18 // indirect
-	go.etcd.io/etcd/client/v3 v3.5.18 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.17.0 // indirect

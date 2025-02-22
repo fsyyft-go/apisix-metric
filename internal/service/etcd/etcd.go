@@ -14,7 +14,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
-	"github.com/fsyyft-go/apisix-metric/internal/log"
+	"github.com/fsyyft-go/apisix-metric/pkg/log"
 )
 
 // Service 结构体封装了 etcd 服务的功能。

@@ -6,8 +6,8 @@ package main
 
 import (
 	"github.com/fsyyft-go/apisix-metric/internal/config"
-	"github.com/fsyyft-go/apisix-metric/internal/log"
 	"github.com/fsyyft-go/apisix-metric/internal/service"
+	"github.com/fsyyft-go/apisix-metric/pkg/log"
 )
 
 // 主程序入口。
