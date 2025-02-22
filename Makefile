@@ -16,6 +16,14 @@ test:
 	mkdir -p $(LOG_DIR)
 	go test -v -race ./...
 
+# 运行性能测试。
+# 使用 -bench 标志运行基准测试。
+# 使用 -benchmem 标志显示内存分配统计。
+# 使用 -count 标志指定运行次数。
+# 使用 -cpu 标志指定 CPU 核心数。
+bench:
+	go test -bench=. -benchmem -count=5 -cpu=1,2,4,8 ./pkg/cache/...
+
 # 运行测试并生成覆盖率报告。
 # 生成 HTML 格式的覆盖率报告。
 # 报告将保存在 coverage 目录下。

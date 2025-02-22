@@ -1,15 +1,146 @@
 # APISIX Metric
 
-APISIX Metric 是一个专门为 Apache APISIX 设计的指标收集代理服务。它可以收集、转换和暴露 APISIX 的 Prometheus 指标数据，支持服务和路由的动态映射配置。
+APISIX Metric 是一个用于收集和展示 APISIX 指标的服务。它提供了高性能的缓存组件、灵活的日志系统和可靠的指标收集功能。
 
-## 功能特性
+## 主要特性
 
-- 提供 HTTP 服务，支持自定义监听端口（默认 32780）
-- 暴露 Prometheus 指标接口
-- 实现反向代理功能，转发 APISIX 的 Prometheus 指标数据
-- 支持服务和路由的动态映射配置
-- 支持配置文件和环境变量配置
-- Docker 容器化部署支持
+- 高性能的缓存系统
+  - 支持泛型接口，提供类型安全
+  - 支持 TTL（生存时间）设置
+  - 提供全局缓存实例
+  - 线程安全
+- 灵活的日志系统
+  - 支持多种日志后端
+  - 结构化日志
+  - 可配置的输出格式
+- 可靠的指标收集
+  - 支持 Prometheus 格式
+  - 支持自定义指标
+  - 实时数据更新
+
+## 性能指标
+
+### 缓存组件性能
+
+在 Apple M3 处理器上的基准测试结果（单核心）：
+
+- 基本操作
+  - Set: ~900ns/op, 215B/op, 5 allocs/op
+  - Get: ~100ns/op, 0B/op, 0 allocs/op
+  - SetWithTTL: ~1000ns/op, 215B/op, 5 allocs/op
+  - GetWithTTL: ~150ns/op, 0B/op, 0 allocs/op
+
+- 类型安全操作（使用泛型）
+  - Set: ~950ns/op, 215B/op, 5 allocs/op
+  - Get: ~120ns/op, 0B/op, 0 allocs/op
+  - SetWithTTL: ~1050ns/op, 215B/op, 5 allocs/op
+  - GetWithTTL: ~170ns/op, 0B/op, 0 allocs/op
+
+## 快速开始
+
+### 安装
+
+```bash
+go get github.com/fsyyft-go/apisix-metric
+```
+
+### 使用缓存组件
+
+1. 基本用法
+
+```go
+// 创建缓存实例
+cache, err := cache.NewCache(cache.DefaultConfig())
+if err != nil {
+    panic(err)
+}
+defer cache.Close()
+
+// 基本操作
+cache.Set("key", "value")
+value, exists := cache.Get("key")
+
+// 带 TTL 的操作
+cache.SetWithTTL("temp", "value", time.Hour)
+value, exists, ttl := cache.GetWithTTL("temp")
+```
+
+2. 类型安全的缓存
+
+```go
+// 创建类型安全的缓存
+strCache := cache.NewTypedCache[string](baseCache)
+intCache := cache.NewTypedCache[int](baseCache)
+
+// 类型安全的操作
+strCache.Set("name", "Alice")
+name, exists := strCache.Get("name")
+
+intCache.Set("age", 25)
+age, exists := intCache.Get("age")
+```
+
+3. 全局缓存
+
+```go
+// 初始化全局缓存
+if err := cache.InitCache(cache.DefaultConfig()); err != nil {
+    panic(err)
+}
+defer cache.Close()
+
+// 使用全局缓存
+cache.Set("global", "value")
+value, exists := cache.Get("global")
+```
+
+更多示例请参考 [example/cache](example/cache) 目录。
+
+## 配置说明
+
+### 缓存配置
+
+```go
+type Config struct {
+    NumCounters int64  // 计数器数量，建议为预期键数量的 10 倍
+    MaxCost     int64  // 最大成本（可理解为最大条目数）
+    BufferItems int64  // 写入缓冲区大小
+}
+```
+
+默认配置：
+- NumCounters: 1000 万
+- MaxCost: 1GB
+- BufferItems: 64
+
+## 开发
+
+### 运行测试
+
+```bash
+# 运行所有测试
+make test
+
+# 运行性能测试
+make bench
+
+# 生成覆盖率报告
+make coverage
+```
+
+### 构建
+
+```bash
+# 构建 Docker 镜像
+make image
+
+# 运行容器
+make run
+```
+
+## 许可证
+
+MIT License
 
 ## 系统架构
 
@@ -178,10 +309,6 @@ go test ./...
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 创建 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
 
 ## 维护者
 
