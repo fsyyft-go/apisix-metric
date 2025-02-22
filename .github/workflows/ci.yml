@@ -53,11 +53,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'
+          go-version: '1.24'
           cache: true
           
-      # 运行 golangci-lint。
+      # 使用 golangci-lint 官方 action 运行代码质量检查。
       - name: Run golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@v3
         with:
+          # 使用最新版本的 golangci-lint。
           version: latest
