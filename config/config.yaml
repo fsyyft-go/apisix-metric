@@ -3,12 +3,14 @@ server:
   # 服务器监听端口，默认为 32780。
   port: 32780
 
-# 日志配置
+# 日志配置。
 log:
-  # 日志类型，可选值：console, std, logrus，默认为 console
+  # 日志类型，可选值：console, std, logrus，默认为 console。
   type: logrus
-  # 日志输出路径，默认输出到控制台
+  # 日志输出路径，默认输出到控制台。
   output: "logs/apisix-metric.log"
+  # 日志级别，可选值：debug, info, warn, error, fatal，默认为 info。
+  level: "debug"
 
 # Prometheus 监控配置。
 prometheus:
@@ -90,16 +92,16 @@ proxy:
     # 远程代理路径。
     path: "/apisix/prometheus/metrics"
 
-  # etcd 配置
+  # etcd 配置。
   etcd:
-    # etcd 服务器地址列表
+    # etcd 服务器地址列表。
     endpoints:
       - "http://10.254.157.113:10004"
-    # 连接超时时间（秒）
+    # 连接超时时间（秒）。
     timeout: 30
-    # 认证配置（可选）
+    # 认证配置（可选）。
     auth:
       username: "root"
       password: "etcd@2025"
-    # 前缀配置
+    # 前缀配置。
     prefix: "/apisix"

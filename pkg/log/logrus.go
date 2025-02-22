@@ -6,7 +6,6 @@
 package log
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 
@@ -15,13 +14,22 @@ import (
 
 // LogrusLogger 实现了 Logger 接口，使用 Logrus 作为底层日志库。
 // 这个实现提供了丰富的日志功能，包括：
-// - 结构化日志记录
-// - 多种输出格式（文本、JSON）
-// - 灵活的日志级别控制
-// - 支持同时输出到多个目标
+// - 结构化日志记录。
+// - 多种输出格式（文本、JSON）。
+// - 灵活的日志级别控制。
+// - 支持同时输出到多个目标。
 type LogrusLogger struct {
 	// logger 是 Logrus 的日志实例，包含了所有的上下文信息。
 	logger *logrus.Entry
+}
+
+// logrusLevelMap 定义了自定义日志级别到 Logrus 日志级别的映射。
+var logrusLevelMap = map[Level]logrus.Level{
+	DebugLevel: logrus.DebugLevel,
+	InfoLevel:  logrus.InfoLevel,
+	WarnLevel:  logrus.WarnLevel,
+	ErrorLevel: logrus.ErrorLevel,
+	FatalLevel: logrus.FatalLevel,
 }
 
 // NewLogrusLogger 创建一个新的 LogrusLogger 实例。
@@ -45,8 +53,8 @@ func NewLogrusLogger(output string) (Logger, error) {
 			return nil, err
 		}
 
-		// 同时将日志输出到文件和标准输出，方便查看和持久化。
-		log.SetOutput(io.MultiWriter(os.Stdout, file))
+		// 只输出到文件。
+		log.SetOutput(file)
 	}
 
 	// 配置日志格式为文本格式。
@@ -56,9 +64,30 @@ func NewLogrusLogger(output string) (Logger, error) {
 		TimestampFormat: "2006-01-02 15:04:05",
 	})
 
+	// 默认设置为 InfoLevel。
+	log.SetLevel(logrus.InfoLevel)
+
 	return &LogrusLogger{
 		logger: logrus.NewEntry(log),
 	}, nil
+}
+
+// SetLevel 实现 Logger 接口的日志级别设置方法。
+func (l *LogrusLogger) SetLevel(level Level) {
+	if logrusLevel, ok := logrusLevelMap[level]; ok {
+		l.logger.Logger.SetLevel(logrusLevel)
+	}
+}
+
+// GetLevel 实现 Logger 接口的日志级别获取方法。
+func (l *LogrusLogger) GetLevel() Level {
+	logrusLevel := l.logger.Logger.GetLevel()
+	for level, lLevel := range logrusLevelMap {
+		if lLevel == logrusLevel {
+			return level
+		}
+	}
+	return InfoLevel
 }
 
 // Debug 实现 Logger 接口的调试级别日志记录。

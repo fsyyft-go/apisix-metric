@@ -5,11 +5,11 @@
 // Package log 提供了一个统一的日志接口和多种日志实现。
 //
 // 这个包的主要特性包括：
-//   - 支持多种日志后端（标准输出、Logrus）
-//   - 提供统一的日志接口
-//   - 支持结构化日志记录
-//   - 支持多个日志级别
-//   - 支持文件和标准输出
+//   - 支持多种日志后端（标准输出、Logrus）。
+//   - 提供统一的日志接口。
+//   - 支持结构化日志记录。
+//   - 支持多个日志级别。
+//   - 支持文件和标准输出。
 //
 // 基本使用示例：
 //
@@ -21,6 +21,10 @@
 //
 // 更多示例请参考 example/log 目录。
 package log
+
+import (
+	"fmt"
+)
 
 // Level 定义了日志的级别类型，用于控制日志的输出粒度。
 type Level int
@@ -47,9 +51,52 @@ const (
 	FatalLevel
 )
 
+// String 返回日志级别的字符串表示。
+func (l Level) String() string {
+	switch l {
+	case DebugLevel:
+		return "debug"
+	case InfoLevel:
+		return "info"
+	case WarnLevel:
+		return "warn"
+	case ErrorLevel:
+		return "error"
+	case FatalLevel:
+		return "fatal"
+	default:
+		return "unknown"
+	}
+}
+
+// ParseLevel 从字符串解析日志级别。
+func ParseLevel(level string) (Level, error) {
+	switch level {
+	case "debug":
+		return DebugLevel, nil
+	case "info":
+		return InfoLevel, nil
+	case "warn":
+		return WarnLevel, nil
+	case "error":
+		return ErrorLevel, nil
+	case "fatal":
+		return FatalLevel, nil
+	default:
+		return InfoLevel, fmt.Errorf("unknown level: %s", level)
+	}
+}
+
 // Logger 定义了统一的日志接口。
 // 这个接口提供了基本的日志记录功能和结构化日志支持，可以通过不同的实现来支持不同的日志后端。
 type Logger interface {
+	// SetLevel 设置日志级别。
+	// 只有大于或等于设置级别的日志才会被记录。
+	SetLevel(level Level)
+
+	// GetLevel 获取当前的日志级别。
+	GetLevel() Level
+
 	// Debug 记录调试级别的日志。
 	// 参数 args 支持任意类型的值，这些值会被转换为字符串并连接。
 	// 调试日志应该包含有助于诊断问题的详细信息。

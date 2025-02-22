@@ -404,7 +404,7 @@ func (h *ProxyHandler) getDataFromCache(ctx context.Context, prefix string) (map
 
 	log.WithFields(map[string]interface{}{
 		"size": len(data),
-	}).Debug("成功设置缓存数据。")
+	}).Info("成功设置缓存数据。")
 
 	return data, nil
 }

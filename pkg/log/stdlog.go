@@ -14,15 +14,17 @@ import (
 
 // StdLogger 实现了 Logger 接口，使用 Go 标准库的 log 包作为底层实现。
 // 这个实现提供了基本的日志功能：
-// - 支持不同的日志级别
-// - 支持结构化字段
-// - 支持文件输出
-// - 支持格式化日志
+// - 支持不同的日志级别。
+// - 支持结构化字段。
+// - 支持文件输出。
+// - 支持格式化日志。
 type StdLogger struct {
 	// logger 是标准库的日志实例。
 	logger *log.Logger
 	// fields 存储结构化字段信息。
 	fields map[string]interface{}
+	// level 存储当前的日志级别。
+	level Level
 }
 
 // NewStdLogger 创建一个新的 StdLogger 实例。
@@ -53,7 +55,24 @@ func NewStdLogger(output string) (Logger, error) {
 		logger: log.New(writer, "", log.LstdFlags),
 		// 初始化结构化字段映射。
 		fields: make(map[string]interface{}),
+		// 默认使用 InfoLevel。
+		level: InfoLevel,
 	}, nil
+}
+
+// SetLevel 实现 Logger 接口的日志级别设置方法。
+func (l *StdLogger) SetLevel(level Level) {
+	l.level = level
+}
+
+// GetLevel 实现 Logger 接口的日志级别获取方法。
+func (l *StdLogger) GetLevel() Level {
+	return l.level
+}
+
+// shouldLog 检查给定的日志级别是否应该被记录。
+func (l *StdLogger) shouldLog(level Level) bool {
+	return level >= l.level
 }
 
 // formatFields 格式化结构化字段为字符串。
@@ -71,77 +90,83 @@ func (l *StdLogger) formatFields() string {
 
 // log 记录指定级别的日志。
 // 参数 level 是日志级别标识，args 是要记录的内容。
-func (l *StdLogger) log(level string, args ...interface{}) {
+func (l *StdLogger) log(logLevel Level, levelStr string, args ...interface{}) {
+	if !l.shouldLog(logLevel) {
+		return
+	}
 	fields := l.formatFields()
 	if fields != "" {
-		l.logger.Printf("%s %s %v", level, fields, fmt.Sprint(args...))
+		l.logger.Printf("%s %s %v", levelStr, fields, fmt.Sprint(args...))
 	} else {
-		l.logger.Printf("%s %v", level, fmt.Sprint(args...))
+		l.logger.Printf("%s %v", levelStr, fmt.Sprint(args...))
 	}
 }
 
 // logf 记录指定级别的格式化日志。
 // 参数 level 是日志级别标识，format 是格式化字符串，args 是格式化参数。
-func (l *StdLogger) logf(level string, format string, args ...interface{}) {
+func (l *StdLogger) logf(logLevel Level, levelStr string, format string, args ...interface{}) {
+	if !l.shouldLog(logLevel) {
+		return
+	}
 	fields := l.formatFields()
 	if fields != "" {
-		l.logger.Printf("%s %s "+format, append([]interface{}{level, fields}, args...)...)
+		l.logger.Printf("%s %s "+format, append([]interface{}{levelStr, fields}, args...)...)
 	} else {
-		l.logger.Printf("%s "+format, append([]interface{}{level}, args...)...)
+		l.logger.Printf("%s "+format, append([]interface{}{levelStr}, args...)...)
 	}
 }
 
 // Debug 实现 Logger 接口的调试级别日志记录。
 func (l *StdLogger) Debug(args ...interface{}) {
-	l.log("[DEBUG]", args...)
+	l.log(DebugLevel, "[DEBUG]", args...)
 }
 
 // Debugf 实现 Logger 接口的格式化调试级别日志记录。
 func (l *StdLogger) Debugf(format string, args ...interface{}) {
-	l.logf("[DEBUG]", format, args...)
+	l.logf(DebugLevel, "[DEBUG]", format, args...)
 }
 
 // Info 实现 Logger 接口的信息级别日志记录。
 func (l *StdLogger) Info(args ...interface{}) {
-	l.log("[INFO]", args...)
+	l.log(InfoLevel, "[INFO]", args...)
 }
 
 // Infof 实现 Logger 接口的格式化信息级别日志记录。
 func (l *StdLogger) Infof(format string, args ...interface{}) {
-	l.logf("[INFO]", format, args...)
+	l.logf(InfoLevel, "[INFO]", format, args...)
 }
 
 // Warn 实现 Logger 接口的警告级别日志记录。
 func (l *StdLogger) Warn(args ...interface{}) {
-	l.log("[WARN]", args...)
+	l.log(WarnLevel, "[WARN]", args...)
 }
 
 // Warnf 实现 Logger 接口的格式化警告级别日志记录。
 func (l *StdLogger) Warnf(format string, args ...interface{}) {
-	l.logf("[WARN]", format, args...)
+	l.logf(WarnLevel, "[WARN]", format, args...)
 }
 
 // Error 实现 Logger 接口的错误级别日志记录。
 func (l *StdLogger) Error(args ...interface{}) {
-	l.log("[ERROR]", args...)
+	l.log(ErrorLevel, "[ERROR]", args...)
 }
 
 // Errorf 实现 Logger 接口的格式化错误级别日志记录。
 func (l *StdLogger) Errorf(format string, args ...interface{}) {
-	l.logf("[ERROR]", format, args...)
+	l.logf(ErrorLevel, "[ERROR]", format, args...)
 }
 
 // Fatal 实现 Logger 接口的致命错误级别日志记录。
 // 记录日志后会导致程序以状态码 1 退出。
 func (l *StdLogger) Fatal(args ...interface{}) {
-	l.log("[FATAL]", args...)
+	l.log(FatalLevel, "[FATAL]", args...)
 	os.Exit(1)
 }
 
 // Fatalf 实现 Logger 接口的格式化致命错误级别日志记录。
 // 记录日志后会导致程序以状态码 1 退出。
 func (l *StdLogger) Fatalf(format string, args ...interface{}) {
-	l.logf("[FATAL]", format, args...)
+	l.logf(FatalLevel, "[FATAL]", format, args...)
 	os.Exit(1)
 }
 
@@ -157,6 +182,7 @@ func (l *StdLogger) WithField(key string, value interface{}) Logger {
 	return &StdLogger{
 		logger: l.logger,
 		fields: newFields,
+		level:  l.level,
 	}
 }
 
@@ -174,5 +200,6 @@ func (l *StdLogger) WithFields(fields map[string]interface{}) Logger {
 	return &StdLogger{
 		logger: l.logger,
 		fields: newFields,
+		level:  l.level,
 	}
 }

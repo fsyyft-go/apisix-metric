@@ -20,17 +20,26 @@ func main() {
 		panic(err)
 	}
 
-	// 初始化日志
+	// 初始化日志。
 	if err := log.InitLogger(log.LogType(cfg.Log.Type), cfg.Log.Output); err != nil {
 		panic(err)
 	}
 
-	// 记录应用启动日志
+	// 设置日志级别。
+	level, err := log.ParseLevel(cfg.Log.Level)
+	if err != nil {
+		log.Warnf("无效的日志级别 '%s'，使用默认级别 'info'", cfg.Log.Level)
+		level = log.InfoLevel
+	}
+	log.SetLevel(level)
+
+	// 记录应用启动日志。
 	log.Info("Starting APISIX Metric service...")
 	log.WithFields(map[string]interface{}{
-		"port":     cfg.Server.Port,
-		"log_type": cfg.Log.Type,
-		"log_path": cfg.Log.Output,
+		"port":      cfg.Server.Port,
+		"log_type":  cfg.Log.Type,
+		"log_path":  cfg.Log.Output,
+		"log_level": cfg.Log.Level,
 	}).Info("Application configuration loaded")
 
 	// 创建并启动 Web 服务。

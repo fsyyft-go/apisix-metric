@@ -18,15 +18,20 @@ type (
 		Port string `yaml:"port"`
 	}
 
-	// Log 结构体定义了日志配置信息
+	// Log 结构体定义了日志配置信息。
 	Log struct {
-		// Type 表示日志类型，可选值：console, std, logrus
-		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_TYPE 进行配置
+		// Type 表示日志类型，可选值：console, std, logrus。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_TYPE 进行配置。
 		Type string `yaml:"type"`
 
-		// Output 表示日志输出路径
-		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_OUTPUT 进行配置
+		// Output 表示日志输出路径。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_OUTPUT 进行配置。
 		Output string `yaml:"output"`
+
+		// Level 表示日志级别，可选值：debug, info, warn, error, fatal。
+		// 可以通过配置文件或环境变量 FSYYFT_APISIX_METRIC_LOG_LEVEL 进行配置。
+		// 默认为 info。
+		Level string `yaml:"level"`
 	}
 
 	// Prometheus 结构体定义了 Prometheus 指标的配置信息。
@@ -166,19 +171,26 @@ func LoadConfig(path string) (*Config, error) {
 		config.Proxy.Remote.Path = "/apisix/prometheus/metrics"
 	}
 
-	// 使用环境变量覆盖日志类型配置
+	// 使用环境变量覆盖日志类型配置。
 	if logType := os.Getenv("FSYYFT_APISIX_METRIC_LOG_TYPE"); logType != "" {
 		config.Log.Type = logType
 	} else if config.Log.Type == "" {
 		config.Log.Type = "console"
 	}
 
-	// 使用环境变量覆盖日志输出路径配置
+	// 使用环境变量覆盖日志输出路径配置。
 	if logOutput := os.Getenv("FSYYFT_APISIX_METRIC_LOG_OUTPUT"); logOutput != "" {
 		config.Log.Output = logOutput
 	}
 
-	// 使用环境变量覆盖 etcd 配置
+	// 使用环境变量覆盖日志级别配置。
+	if logLevel := os.Getenv("FSYYFT_APISIX_METRIC_LOG_LEVEL"); logLevel != "" {
+		config.Log.Level = logLevel
+	} else if config.Log.Level == "" {
+		config.Log.Level = "info"
+	}
+
+	// 使用环境变量覆盖 etcd 配置。
 	if endpoints := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_ENDPOINTS"); endpoints != "" {
 		config.Proxy.Etcd.Endpoints = []string{endpoints}
 	} else if len(config.Proxy.Etcd.Endpoints) == 0 {
@@ -186,7 +198,7 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	if timeout := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_TIMEOUT"); timeout != "" {
-		config.Proxy.Etcd.Timeout = 30 // 默认 30 秒
+		config.Proxy.Etcd.Timeout = 30 // 默认 30 秒。
 	}
 
 	if username := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_ETCD_AUTH_USERNAME"); username != "" {
