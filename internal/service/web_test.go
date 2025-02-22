@@ -5,13 +5,35 @@
 package service
 
 import (
+	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
 
 	"github.com/stretchr/testify/assert"
 )
+
+// waitForServer 等待服务启动。
+func waitForServer(url string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			resp, err := http.Get(url)
+			if err == nil {
+				resp.Body.Close()
+				return nil
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+}
 
 // TestRun 测试 Run 方法是否正确启动 HTTP 服务。
 func TestRun(t *testing.T) {
@@ -33,34 +55,46 @@ func TestRun(t *testing.T) {
 	// 创建 WebService 实例。
 	webService := NewWebService(cfg)
 
+	// 创建一个用于停止服务的 context。
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	// 启动 HTTP 服务。
 	go func() {
-		err := webService.Run()
-		assert.NoError(t, err)
+		if err := webService.Run(ctx); err != nil && err != context.Canceled {
+			t.Errorf("服务启动失败：%v", err)
+		}
 	}()
 
-	// 创建一个测试请求。
-	req, err := http.NewRequest("GET", "http://localhost:44480/", nil)
-	assert.NoError(t, err)
+	// 等待服务启动。
+	err := waitForServer("http://localhost:44480/")
+	assert.NoError(t, err, "服务启动超时")
 
-	// 创建一个响应记录器。
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	assert.NoError(t, err)
-	defer resp.Body.Close()
+	// 创建 HTTP 客户端。
+	client := &http.Client{
+		Timeout: 5 * time.Second,
+	}
 
-	// 验证响应状态码。
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// 测试根路径。
+	t.Run("Test Root Path", func(t *testing.T) {
+		resp, err := client.Get("http://localhost:44480/")
+		assert.NoError(t, err)
+		if resp != nil {
+			defer resp.Body.Close()
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		}
+	})
 
-	// 创建一个测试请求。
-	req, err = http.NewRequest("GET", "http://localhost:44480/metrics", nil)
-	assert.NoError(t, err)
+	// 测试 metrics 路径。
+	t.Run("Test Metrics Path", func(t *testing.T) {
+		resp, err := client.Get("http://localhost:44480/metrics")
+		assert.NoError(t, err)
+		if resp != nil {
+			defer resp.Body.Close()
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		}
+	})
 
-	// 创建一个响应记录器。
-	resp, err = client.Do(req)
-	assert.NoError(t, err)
-	defer resp.Body.Close()
-
-	// 验证响应状态码。
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	// 停止服务。
+	cancel()
 }

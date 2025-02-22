@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/fsyyft-go/apisix-metric/pkg/log"
+	"github.com/fsyyft-go/kit/log"
 )
 
 // RequestLogger 创建一个用于记录 HTTP 请求信息的中间件。

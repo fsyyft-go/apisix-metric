@@ -1,0 +1,53 @@
+# APISIX 指标收集服务配置文件。
+#
+# 构建说明：
+# 1. 使用动态日期标签构建（格式：yyMMdd）：
+#    IMAGE_TAG=$(date +%y%m%d) docker-compose up -d --build
+#
+# 2. 使用默认 latest 标签构建：
+#    docker-compose up -d --build
+
+services:
+  # APISIX 指标收集服务定义。
+  apisix-metric:
+    # 构建配置。
+    build:
+      # 构建上下文目录，使用当前目录作为构建环境。
+      context: .
+      # 指定 Dockerfile 文件路径。
+      dockerfile: Dockerfile
+      # 镜像标签配置，支持动态生成或默认值。
+      tags:
+        # ${IMAGE_TAG:-latest} 表示：
+        # 1. 如果设置了 IMAGE_TAG 环境变量，则使用其值。
+        # 2. 如果未设置 IMAGE_TAG，则使用 latest 作为默认值。
+        - "apisix-metric:${IMAGE_TAG:-latest}"
+    # 指定容器名称，方便识别和管理。
+    container_name: apisix-metric
+    # 容器重启策略：除非手动停止，否则总是重启。
+    restart: unless-stopped
+    # 环境变量配置。
+    environment:
+      # 日志类型配置，使用 logrus 日志库。
+      - "FSYYFT_APISIX_METRIC_LOG_TYPE=logrus"
+      # 日志输出路径配置，指定日志文件位置。
+      - "FSYYFT_APISIX_METRIC_LOG_OUTPUT=/app/logs/app.log"
+    # 端口映射配置，将容器内的 32780 端口映射到主机的 32780 端口。
+    ports:
+      - "32780:32780"
+    # 数据卷挂载配置。
+    volumes:
+      # 挂载配置文件目录，确保容器可以读取最新的配置。
+      - "./config:/app/config:ro"
+      # 挂载日志目录，便于在主机上查看和管理日志。
+      - "./logs:/app/logs:rw"
+    # 网络配置，将容器连接到指定网络。
+    networks:
+      - apisix-metric-network
+
+# 网络配置段。
+networks:
+  # 定义名为 apisix-metric-network 的网络。
+  apisix-metric-network:
+    # 使用 bridge 驱动，这是 Docker 的默认网络驱动类型。
+    driver: bridge 
