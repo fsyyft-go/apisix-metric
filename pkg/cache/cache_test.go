@@ -130,7 +130,11 @@ func TestGlobalCache(t *testing.T) {
 		if err := InitCache(DefaultConfig()); err != nil {
 			t.Fatalf("初始化全局缓存失败: %v", err)
 		}
-		defer Close()
+		defer func() {
+			if err := Close(); err != nil {
+				t.Errorf("关闭缓存失败: %v", err)
+			}
+		}()
 
 		key := "test_key"
 		value := "test_value"
@@ -400,7 +404,11 @@ func BenchmarkGlobalCache(b *testing.B) {
 		if err := InitCache(DefaultConfig()); err != nil {
 			b.Fatalf("初始化全局缓存失败: %v", err)
 		}
-		defer Close()
+		defer func() {
+			if err := Close(); err != nil {
+				b.Errorf("关闭缓存失败: %v", err)
+			}
+		}()
 
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
@@ -413,7 +421,11 @@ func BenchmarkGlobalCache(b *testing.B) {
 		if err := InitCache(DefaultConfig()); err != nil {
 			b.Fatalf("初始化全局缓存失败: %v", err)
 		}
-		defer Close()
+		defer func() {
+			if err := Close(); err != nil {
+				b.Errorf("关闭缓存失败: %v", err)
+			}
+		}()
 
 		// 预先设置一些数据
 		key := "bench-global"
@@ -429,7 +441,11 @@ func BenchmarkGlobalCache(b *testing.B) {
 		if err := InitCache(DefaultConfig()); err != nil {
 			b.Fatalf("初始化全局缓存失败: %v", err)
 		}
-		defer Close()
+		defer func() {
+			if err := Close(); err != nil {
+				b.Errorf("关闭缓存失败: %v", err)
+			}
+		}()
 
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
@@ -442,7 +458,11 @@ func BenchmarkGlobalCache(b *testing.B) {
 		if err := InitCache(DefaultConfig()); err != nil {
 			b.Fatalf("初始化全局缓存失败: %v", err)
 		}
-		defer Close()
+		defer func() {
+			if err := Close(); err != nil {
+				b.Errorf("关闭缓存失败: %v", err)
+			}
+		}()
 
 		// 预先设置一些数据
 		key := "bench-global-ttl"

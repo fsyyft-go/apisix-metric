@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/apisix-metric .
 
 # 复制配置文件。
-COPY config/config.yaml ./config/config.yaml
+COPY config/config.yml ./config/config.yml
 
 # 创建日志目录。
 RUN mkdir -p /app/logs && \
