@@ -86,7 +86,7 @@ proxy:
     # 远程代理协议，默认为 http。
     scheme: http
     # 远程代理主机地址。
-    host: "10.254.157.113:25391"
+    host: "10.254.157.113:10011"
     # 远程代理路径。
     path: "/apisix/prometheus/metrics"
 

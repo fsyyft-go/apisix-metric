@@ -156,7 +156,7 @@ func LoadConfig(path string) (*Config, error) {
 	if host := os.Getenv("FSYYFT_APISIX_METRIC_PROXY_REMOTE_HOST"); host != "" {
 		config.Proxy.Remote.Host = host
 	} else if config.Proxy.Remote.Host == "" {
-		config.Proxy.Remote.Host = "10.254.157.113:25391"
+		config.Proxy.Remote.Host = "10.254.157.113:10011"
 	}
 
 	// 使用环境变量覆盖远程代理路径配置。
