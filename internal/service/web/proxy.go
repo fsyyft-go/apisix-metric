@@ -20,7 +20,7 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 
 	"github.com/fsyyft-go/apisix-metric/internal/config"
-	"github.com/fsyyft-go/apisix-metric/pkg/cache"
+	"github.com/fsyyft-go/kit/cache"
 	"github.com/fsyyft-go/kit/log"
 )
 
@@ -53,7 +53,7 @@ type ProxyHandler struct {
 //   - *ProxyHandler：初始化后的代理处理器实例。
 func NewProxyHandler(cfg *config.Config) *ProxyHandler {
 	// 使用默认配置初始化缓存。
-	cache, err := cache.NewCache(cache.DefaultConfig())
+	cache, err := cache.NewCache()
 	if err != nil {
 		log.WithFields(map[string]interface{}{
 			"error": err,
@@ -361,7 +361,7 @@ func (h *ProxyHandler) getDataFromCache(ctx context.Context, prefix string) (map
 	}
 
 	// 创建类型安全的缓存实例。
-	typedCache := cache.NewTypedCache[map[string]string](h.cache)
+	typedCache := cache.AsTypedCache[map[string]string](h.cache)
 
 	// 尝试从缓存获取数据。
 	cacheData, exists, ttl := typedCache.GetWithTTL(ETCD_DATA_CACHE_KEY)

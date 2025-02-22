@@ -4,7 +4,7 @@ go 1.24
 
 require (
 	github.com/dgraph-io/ristretto v0.2.0
-	github.com/fsyyft-go/kit v0.0.4
+	github.com/fsyyft-go/kit v0.0.5-0.20250227105733-329dd0271a50
 	github.com/gin-gonic/gin v1.10.0
 	github.com/prometheus/client_golang v1.20.5
 	github.com/stretchr/testify v1.10.0
