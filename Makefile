@@ -19,8 +19,21 @@ test:
 # 运行性能测试。
 # 使用 -bench 标志运行基准测试。
 # 使用 -benchmem 标志显示内存分配统计。
+
+# 运行基本的代码质量检查。
+# 使用 golangci-lint 进行静态代码分析。
+# 设置 3 分钟超时时间。
+lint:
+	golangci-lint run --timeout=3m
+
+# 运行严格的代码质量检查。
+# 启用所有 linter。
+# 增加检查严格程度。
+# 设置 5 分钟超时时间。
+lint-strict:
+	golangci-lint run --timeout=5m --enable-all --exclude-use-default=false
+
 # 使用 -count 标志指定运行次数。
-# 使用 -cpu 标志指定 CPU 核心数。
 bench:
 	go test -bench=. -benchmem -count=5 -cpu=1,2,4,8 ./pkg/cache/...
 
