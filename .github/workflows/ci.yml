@@ -1,0 +1,61 @@
+# 工作流名称。
+name: CI
+
+# 定义触发工作流的事件。
+on:
+  # 当有代码推送时触发。
+  push:
+  # 当有 Pull Request 时触发。
+  pull_request:
+
+# 环境变量。
+env:
+  IMAGE_NAME: fsyyft/apisix-metric
+
+jobs:
+  # 定义测试作业。
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        # 定义测试矩阵，在多个 Go 版本上运行测试。
+        go-version: [ '1.22', '1.23', '1.24' ]
+      # 某个版本失败时不中断其他版本的测试。
+      fail-fast: false
+
+    steps:
+      # 使用官方的 checkout action 检出代码。
+      - uses: actions/checkout@v4
+        
+      # 使用官方的 setup-go action 配置 Go 环境。
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+          cache: true
+          
+      # 运行测试。
+      - name: Run tests
+        run: make test
+
+  # 定义代码质量检查作业。
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+          cache: true
+          
+      # 运行 golangci-lint。
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
