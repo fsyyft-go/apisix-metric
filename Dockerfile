@@ -38,7 +38,7 @@ ENV FSYYFT_APISIX_METRIC_LOG_TYPE=logrus \
     FSYYFT_APISIX_METRIC_LOG_OUTPUT=/app/logs/app.log
 
 # 暴露端口。
-EXPOSE 8080
+EXPOSE 32780
 
 # 声明日志卷。
 VOLUME ["/app/logs"]

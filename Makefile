@@ -31,18 +31,18 @@ image:
 	docker build -t $(IMAGE_NAME):$(DATE) -t $(IMAGE_NAME):latest .
 
 # 运行容器。
-# 将容器内的 8080 端口映射到主机的 48080 端口。
+# 将容器内的 32780 端口映射到主机的 32780 端口。
 # 将容器内的 /app/logs 目录挂载到主机的 ./logs 目录。
 # 支持通过环境变量配置：
-# - FSYYFT_APISIX_METRIC_SERVER_PORT：服务端口，默认为 8080
+# - FSYYFT_APISIX_METRIC_SERVER_PORT：服务端口，默认为 32780
 # - FSYYFT_APISIX_METRIC_LOG_TYPE：日志类型，默认为 logrus
 # - FSYYFT_APISIX_METRIC_LOG_OUTPUT：日志输出路径，默认为 /app/logs/app.log
 run:
 	mkdir -p $(LOG_DIR)
 	docker run \
-		-p 48080:8080 \
+		-p 32780:32780 \
 		-v $(PWD)/$(LOG_DIR):/app/logs \
-		-e FSYYFT_APISIX_METRIC_SERVER_PORT=$(or $(FSYYFT_APISIX_METRIC_SERVER_PORT),8080) \
+		-e FSYYFT_APISIX_METRIC_SERVER_PORT=$(or $(FSYYFT_APISIX_METRIC_SERVER_PORT),32780) \
 		-e FSYYFT_APISIX_METRIC_LOG_TYPE=$(or $(FSYYFT_APISIX_METRIC_LOG_TYPE),logrus) \
 		-e FSYYFT_APISIX_METRIC_LOG_OUTPUT=$(or $(FSYYFT_APISIX_METRIC_LOG_OUTPUT),/app/logs/app.log) \
 		$(IMAGE_NAME)

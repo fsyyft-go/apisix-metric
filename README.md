@@ -4,7 +4,7 @@ APISIX Metric 是一个专门为 Apache APISIX 设计的指标收集代理服务
 
 ## 功能特性
 
-- 提供 HTTP 服务，支持自定义监听端口
+- 提供 HTTP 服务，支持自定义监听端口（默认 32780）
 - 暴露 Prometheus 指标接口
 - 实现反向代理功能，转发 APISIX 的 Prometheus 指标数据
 - 支持服务和路由的动态映射配置
@@ -86,7 +86,7 @@ make run
 
 ```yaml
 server:
-  port: 8080                        # 服务器监听端口
+  port: 32780                      # 服务器监听端口（默认）
 
 prometheus:
   path: /metrics                    # Prometheus 指标暴露路径
@@ -111,7 +111,7 @@ proxy:
 
 支持通过环境变量覆盖配置文件中的设置：
 
-- `FSYYFT_APISIX_METRIC_SERVER_PORT`: 服务器端口
+- `FSYYFT_APISIX_METRIC_SERVER_PORT`: 服务器端口（默认 32780）
 - `FSYYFT_APISIX_METRIC_PROMETHEUS_PATH`: Prometheus 指标路径
 - `FSYYFT_APISIX_METRIC_PROXY_LOCAL_PATH`: 本地代理路径
 - `FSYYFT_APISIX_METRIC_PROXY_REMOTE_SCHEME`: 远程服务协议

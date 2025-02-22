@@ -18,7 +18,7 @@ func TestRun(t *testing.T) {
 	// 创建一个模拟的配置对象。
 	cfg := &config.Config{
 		Server: config.Server{
-			Port: "8080",
+			Port: "44480",
 		},
 		Prometheus: config.Prometheus{
 			Path: "/metrics",
@@ -40,7 +40,7 @@ func TestRun(t *testing.T) {
 	}()
 
 	// 创建一个测试请求。
-	req, err := http.NewRequest("GET", "http://localhost:8080/", nil)
+	req, err := http.NewRequest("GET", "http://localhost:44480/", nil)
 	assert.NoError(t, err)
 
 	// 创建一个响应记录器。
@@ -53,7 +53,7 @@ func TestRun(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	// 创建一个测试请求。
-	req, err = http.NewRequest("GET", "http://localhost:8080/metrics", nil)
+	req, err = http.NewRequest("GET", "http://localhost:44480/metrics", nil)
 	assert.NoError(t, err)
 
 	// 创建一个响应记录器。
