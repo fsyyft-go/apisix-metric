@@ -43,40 +43,64 @@ go get github.com/fsyyft-go/apisix-metric
 创建 `config.yaml` 文件：
 
 ```yaml
+# 服务器配置。
 server:
-  port: 32780                      # 服务器监听端口
+  # 服务器监听端口，默认为 32780。
+  port: 32780
 
+# 日志配置。
+log:
+  # 日志类型，可选值：console, std, logrus，默认为 console。
+  type: logrus
+  # 日志输出路径，默认输出到控制台。
+  output: "logs/apisix-metric.log"
+  # 日志级别，可选值：debug, info, warn, error, fatal，默认为 info。
+  level: "debug"
+
+# Prometheus 监控配置。
 prometheus:
-  path: /metrics                   # Prometheus 指标路径
+  # Prometheus 指标暴露路径，默认为 /metrics。
+  path: /metrics
 
+# 代理配置。
 proxy:
   local:
-    path: /apisix/prometheus/metrics  # 本地代理路径
+    # 本地代理路径配置。
+    path: /apisix/prometheus/metrics
+
+  # 代理服务配置。
+  service: {
+    "548130462736843557": "apisix.example.com",
+    "548144976421192485": "user-service.example.com"
+  }
   
-  # 静态服务映射配置
-  service:                         
-    "548130462736843557": "api-gateway"
-    "548144976421192485": "user-service"
-  
-  # 静态路由映射配置
-  route:                           
-    "548130589790700325": "api-gateway-route"
-    "548145045006451493": "user-service-route"
-  
-  # 远程 APISIX 配置
+  # 代理路由配置。
+  route: {
+    "548130589790700325": "apisix-route.example.com",
+    "548145045006451493": "user-service-route.example.com"
+  }
+
+  # 远程代理配置。
   remote:
-    scheme: http                   
-    host: "apisix-host:port"       
+    # 远程代理协议，默认为 http。
+    scheme: http
+    # 远程代理主机地址。
+    host: "apisix-host:port"
+    # 远程代理路径。
     path: "/apisix/prometheus/metrics"
 
-  # etcd 配置（用于动态获取映射关系）
+  # etcd 配置。
   etcd:
+    # etcd 服务器地址列表。
     endpoints:
       - "http://etcd-host:2379"
+    # 连接超时时间（秒）。
     timeout: 30
+    # 认证配置（可选）。
     auth:
       username: "root"
       password: "password"
+    # 前缀配置。
     prefix: "/apisix"
 ```
 
@@ -179,6 +203,23 @@ make docker-build
 ```bash
 docker run -p 32780:32780 fsyyft-go/apisix-metric
 ```
+
+使用 Docker Compose：
+```bash
+# 启动所有服务
+docker compose up -d
+
+# 查看服务状态
+docker compose ps
+
+# 查看服务日志
+docker compose logs -f apisix-metric
+
+# 停止所有服务
+docker compose down
+```
+
+项目提供了完整的 docker-compose.yaml 配置文件，包含了 APISIX Metric、APISIX 和 etcd 服务，可以快速搭建完整的开发和测试环境。
 
 ## 维护者
 
