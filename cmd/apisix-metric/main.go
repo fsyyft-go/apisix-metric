@@ -5,6 +5,11 @@
 package main
 
 import (
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/fsyyft-go/apisix-metric/internal/config"
 	"github.com/fsyyft-go/apisix-metric/internal/service"
 	"github.com/fsyyft-go/kit/log"
@@ -45,9 +50,28 @@ func main() {
 		"log_level": cfg.Log.Level,
 	}).Info("Application configuration loaded")
 
-	// 创建并启动 Web 服务。
+	// 创建上下文和取消函数。
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// 设置信号处理。
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// 创建 Web 服务。
 	webService := service.NewWebService(cfg)
-	if err := webService.Run(); err != nil {
-		log.Fatal("Failed to start web service: ", err)
-	}
+
+	// 在单独的 goroutine 中启动服务。
+	go func() {
+		if err := webService.Run(ctx); err != nil {
+			log.Fatal("Failed to start web service: ", err)
+		}
+	}()
+
+	// 等待信号。
+	sig := <-sigChan
+	log.Infof("Received signal %v, shutting down...", sig)
+
+	// 触发优雅关闭。
+	cancel()
 }

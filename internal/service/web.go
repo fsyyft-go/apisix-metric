@@ -6,6 +6,9 @@
 package service
 
 import (
+	"context"
+	"errors"
+	"net/http"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -95,13 +98,42 @@ func (s *WebService) SetupRouter() *gin.Engine {
 // Run 启动 HTTP 服务并开始监听请求。
 // 该方法会阻塞直到服务器关闭或发生错误。
 //
+// 参数：
+//   - ctx：用于控制服务生命周期的 context。
+//
 // 返回：
 //   - error：如果服务启动失败则返回错误信息。
-func (s *WebService) Run() error {
+func (s *WebService) Run(ctx context.Context) error {
 	// 确保路由已经设置。
 	s.SetupRouter()
-	// 启动服务，监听端口来自配置文件。
-	return s.engine.Run(":" + s.cfg.Server.Port)
+
+	// 创建 HTTP 服务器。
+	srv := &http.Server{
+		Addr:    ":" + s.cfg.Server.Port,
+		Handler: s.engine,
+	}
+
+	// 创建错误通道。
+	errChan := make(chan error, 1)
+
+	// 在新的 goroutine 中启动服务。
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			errChan <- err
+		}
+	}()
+
+	// 等待 context 取消或服务器错误。
+	select {
+	case <-ctx.Done():
+		// 优雅关闭服务器。
+		if err := srv.Shutdown(context.Background()); err != nil {
+			return err
+		}
+		return ctx.Err()
+	case err := <-errChan:
+		return err
+	}
 }
 
 // Engine 返回当前的 Gin 引擎实例。
