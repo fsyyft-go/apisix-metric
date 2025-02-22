@@ -24,8 +24,8 @@ github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13 h1:fAjc9m62+UWV/WA
 github.com/dgryski/go-farm v0.0.0-20200201041132-a6ae2369ad13/go.mod h1:SqUrOPUnsFjfmXRMNPybcSiG0BgUW2AuFH8PAnS2iTw=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
-github.com/fsyyft-go/kit v0.0.2-0.20250225104619-35cead18350d h1:VE/jdGDCB6G71HFD+2HZoWwCuNpx40NmE9LwCg/slxg=
-github.com/fsyyft-go/kit v0.0.2-0.20250225104619-35cead18350d/go.mod h1:dR7PecUeewDc7RQLeTXUKsW99m8c1qktB08qj3r3aMs=
+github.com/fsyyft-go/kit v0.0.2 h1:0syDaACqfWgs++zqG5F7e58m0V+aiLgBCj25LFI4KCU=
+github.com/fsyyft-go/kit v0.0.2/go.mod h1:dR7PecUeewDc7RQLeTXUKsW99m8c1qktB08qj3r3aMs=
 github.com/gabriel-vasile/mimetype v1.4.8 h1:FfZ3gj38NjllZIeJAmMhr+qKL8Wu+nOoI3GqacKw1NM=
 github.com/gabriel-vasile/mimetype v1.4.8/go.mod h1:ByKUIKGjh1ODkGM1asKUbQZOLGrPjydw3hYPU2YU9t8=
 github.com/gin-contrib/sse v1.0.0 h1:y3bT1mUWUxDpW4JLQg/HnTqV4rozuW4tC9eFKTxYI9E=
