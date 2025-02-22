@@ -3,8 +3,7 @@ module github.com/fsyyft-go/apisix-metric
 go 1.24
 
 require (
-	github.com/dgraph-io/ristretto v0.2.0
-	github.com/fsyyft-go/kit v0.0.5-0.20250227105733-329dd0271a50
+	github.com/fsyyft-go/kit v0.0.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/prometheus/client_golang v1.20.5
 	github.com/stretchr/testify v1.10.0
@@ -21,6 +20,7 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/dgraph-io/ristretto v0.2.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
 	github.com/gin-contrib/sse v1.0.0 // indirect
