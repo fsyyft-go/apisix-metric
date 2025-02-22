@@ -37,7 +37,10 @@ func TestRequestLogger(t *testing.T) {
 	logPath := filepath.Join(tmpDir, "request.log")
 
 	// 初始化日志系统，使用 logrus 作为日志记录器。
-	err = log.InitLogger(log.LogTypeLogrus, logPath)
+	err = log.InitLogger(
+		log.WithLogType(log.LogTypeLogrus),
+		log.WithOutput(logPath),
+	)
 	assert.NoError(t, err)
 
 	// 创建测试用的 gin 引擎，使用测试模式避免额外的日志输出。

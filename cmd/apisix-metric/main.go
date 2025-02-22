@@ -21,7 +21,10 @@ func main() {
 	}
 
 	// 初始化日志。
-	if err := log.InitLogger(log.LogType(cfg.Log.Type), cfg.Log.Output); err != nil {
+	if err := log.InitLogger(
+		log.WithLogType(log.LogType(cfg.Log.Type)),
+		log.WithOutput(cfg.Log.Output),
+	); err != nil {
 		panic(err)
 	}
 
