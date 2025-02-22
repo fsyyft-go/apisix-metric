@@ -1,0 +1,107 @@
+# 服务器配置。
+server:
+  # 服务器监听端口，默认为 32780。
+  port: 32780
+
+# 日志配置。
+log:
+  # 日志类型，可选值：console, std, logrus，默认为 console。
+  type: logrus
+  # 日志输出路径，默认输出到控制台。
+  output: "logs/apisix-metric.log"
+  # 日志级别，可选值：debug, info, warn, error, fatal，默认为 info。
+  level: "debug"
+
+# Prometheus 监控配置。
+prometheus:
+  # Prometheus 指标暴露路径，默认为 /metrics。
+  path: /metrics
+
+# 代理配置。
+proxy:
+  local:
+    # 本地代理路径配置。
+    path: /apisix/prometheus/metrics
+
+  # 代理服务配置。
+  service: {
+    "548130462736843557": "apisix.d.pd.ppno.net",
+    "548144976421192485": "portainer.d.pd.ppno.net",
+    "548145579796988709": "hub.d.pd.ppno.net",
+    "548145702522323749": "grafana.d.pd.ppno.net",
+    "548146101736178469": "etcd.d.pd.ppno.net",
+    "548224291649356581": "clash.d.pd.ppno.net",
+    "548419491386622757": "es.d.pd.ppno.net",
+    "548421066817536805": "kibana.d.pd.ppno.net",
+    "548422854832554789": "testweb.d.pd.ppno.net",
+    "548584430545928997": "fnnas.d.pd.ppno.net",
+    "548667232012469029": "fnnas-qinglong.d.pd.ppno.net",
+    "548736378771342117": "qinglong.d.pd.ppno.net",
+    "548983122864112421": "apisix-admin.d.pd.ppno.net",
+    "548992275087098661": "hub-ui.d.pd.ppno.net",
+    "549010890918200101": "etcd-dashboard.d.pd.ppno.net",
+    "549842371303442035": "lvs-test.d.pd.ppno.net",
+    "549998665666659109": "jumpserver.d.pd.ppno.net",
+    "550009153607697189": "prometheus.d.pd.ppno.net",
+    "550116719570453285": "prom.d.pd.ppno.net",
+    "550123519644533541": "cadvisor.d.pd.ppno.net",
+    "550315646232036133": "g.d.pd.ppno.net",
+    "550433728506102565": "dify.d.pd.ppno.net",
+    "551875244588008229": "ollama.d.pd.ppno.net",
+    "551885764523197221": "ollama-webui.d.pd.ppno.net",
+    "551998284009308965": "o.d.pd.ppno.net",
+    "551998973720658725": "chat.d.pd.ppno.net",
+  }
+  
+  # 代理路由配置。
+  route: {
+    "548130589790700325": "apisix.d.pd.ppno.net",
+    "548145045006451493": "portainer.d.pd.ppno.net",
+    "548145620951499557": "hub.d.pd.ppno.net",
+    "548145748609336101": "grafana.d.pd.ppno.net",
+    "548146132321043237": "etcd.d.pd.ppno.net",
+    "548224367281046309": "clash.d.pd.ppno.net",
+    "548419526669108005": "es.d.pd.ppno.net",
+    "548421116327101221": "kibana.d.pd.ppno.net",
+    "548423173582881573": "testweb.d.pd.ppno.net",
+    "548584484803445541": "fnnas.d.pd.ppno.net",
+    "548667276488868645": "fnnas-qinglong.d.pd.ppno.net",
+    "548736410044072741": "qinglong.d.pd.ppno.net",
+    "548983173279646501": "apisix-admin.d.pd.ppno.net",
+    "548992305218978597": "hub-ui.d.pd.ppno.net",
+    "549010922107044645": "etcd-dashboard.d.pd.ppno.net",
+    "549842395949172339": "lvs-test.d.pd.ppno.net",
+    "549998688349455141": "jumpserver.d.pd.ppno.net",
+    "550009175871062821": "simple-prometheus",
+    "550116740340646693": "prom.d.pd.ppno.net",
+    "550123549289874213": "cadvisor.d.pd.ppno.net",
+    "550315671817290533": "g.d.pd.ppno.net",
+    "550433752648516389": "dify.d.pd.ppno.net",
+    "551875302754616101": "ollama.d.pd.ppno.net",
+    "551885789168927525": "ollama-webui.d.pd.ppno.net",
+    "551998324979270437": "o.d.pd.ppno.net",
+    "551999014506070821": "chat.d.pd.ppno.net",
+  }
+
+  # 远程代理配置。
+  remote:
+    # 远程代理协议，默认为 http。
+    scheme: http
+    # 远程代理主机地址。
+    host: "10.254.157.113:10011"
+    # 远程代理路径。
+    path: "/apisix/prometheus/metrics"
+
+  # etcd 配置。
+  etcd:
+    # etcd 服务器地址列表。
+    endpoints:
+      - "http://10.254.157.113:10004"
+    # 连接超时时间（秒）。
+    timeout: 30
+    # 认证配置（可选）。
+    auth:
+      username: "root"
+      password: "etcd@2025"
+    # 前缀配置。
+    prefix: "/apisix"
